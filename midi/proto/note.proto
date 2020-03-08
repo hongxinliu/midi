@@ -1,0 +1,15 @@
+syntax = "proto2";
+
+package midi;
+
+message Note {
+  optional int64 timestamp = 1;
+  optional int64 duration = 2;
+  optional uint32 channel = 3;
+  optional uint32 note = 4;
+  optional uint32 velocity = 5;
+}
+
+message Notes {
+  repeated Note notes = 1;
+}

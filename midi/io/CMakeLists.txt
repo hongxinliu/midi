@@ -1,0 +1,13 @@
+get_filename_component(MODULE_NAME ${CMAKE_CURRENT_SOURCE_DIR} NAME_WE)
+set(TARGET_NAME ${PROJECT_NAME}_${MODULE_NAME})
+
+file(GLOB HDRS "*.h")
+file(GLOB SRCS "*.cc")
+
+add_library(${TARGET_NAME} ${SRCS})
+
+install(FILES ${HDRS} DESTINATION include/${PROJECT_NAME}/${MODULE_NAME})
+install(TARGETS ${TARGET_NAME}
+        RUNTIME DESTINATION bin
+        LIBRARY DESTINATION lib
+        ARCHIVE DESTINATION lib)

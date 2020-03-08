@@ -1,0 +1,86 @@
+syntax = "proto2";
+
+package midi;
+
+message Event {
+  optional uint32 delta_time = 1;
+
+  oneof event {
+    MIDIEvent midi_event = 2;
+    SysexEvent sysex_event = 3;
+    MetaEvent meta_event = 4;
+  }
+}
+
+message MIDIEvent {
+  optional uint32 channel = 1;
+
+  oneof midi_event {
+    NoteOff note_off = 2;
+    NoteOn note_on = 3;
+    Aftertouch after_touch = 4;
+    ControlChange control_change = 5;
+    ProgramChange program_change = 6;
+    ChannelPressure channel_pressure = 7;
+    PitchWheelChange pitch_wheel_change = 8;
+  }
+}
+
+message SysexEvent {
+
+}
+
+message MetaEvent {
+  optional MetaEventType type = 1;
+  optional bytes data = 2;
+}
+
+message NoteOff {
+  optional uint32 note = 1;
+  optional uint32 velocity = 2;
+}
+
+message NoteOn {
+  optional uint32 note = 1;
+  optional uint32 velocity = 2;
+}
+
+message Aftertouch {
+  optional uint32 note = 1;
+  optional uint32 pressure = 2;
+}
+
+message ControlChange {
+  optional uint32 controller = 1;
+  optional uint32 value = 2;
+}
+
+message ProgramChange {
+  optional uint32 program = 1;
+}
+
+message ChannelPressure {
+  optional uint32 pressure = 1;
+}
+
+message PitchWheelChange {
+  optional uint32 value = 1;
+}
+
+enum MetaEventType {
+  SequenceNumber = 0;
+  TextEvent = 1;
+  CopyrightNotice = 2;
+  SequenceName = 3;
+  InstrumentName = 4;
+  Lyric = 5;
+  Marker = 6;
+  CuePoint = 7;
+  MIDIChannelPrefix = 0x20;
+  EndOfTrack = 0x2f;
+  SetTempo = 0x51;
+  SMTPEOffset = 0x54;
+  TimeSignature = 0x58;
+  KeySignature = 0x59;
+  SequencerSpecific = 0x7f;
+}

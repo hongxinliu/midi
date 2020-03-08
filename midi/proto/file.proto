@@ -1,0 +1,22 @@
+syntax = "proto2";
+
+package midi;
+
+import "track.proto";
+
+message File {
+  optional Header header = 1;
+  repeated Track  tracks = 2;
+}
+
+message Header {
+  enum Format {
+    SINGLE = 0;
+    SIMULTANEOUS = 1;
+    INDEPENDENT = 2;
+  }
+
+  optional Format format = 1;
+  optional uint32 num_tracks = 2;
+  optional uint32 division = 3;
+}

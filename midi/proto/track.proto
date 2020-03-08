@@ -1,0 +1,9 @@
+syntax = "proto2";
+
+package midi;
+
+import "event.proto";
+
+message Track {
+  repeated Event events = 1;
+}

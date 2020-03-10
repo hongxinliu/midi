@@ -8,6 +8,7 @@ This project was inspired by [Patrik's piano show](https://www.youtube.com/watch
 * MIDI visualization
 
 ![midi_show](https://res.cloudinary.com/dal4petdi/image/upload/v1583660025/Blog/midi.gif)
+
 Demo show made from this project: [https://www.bilibili.com/video/av94792318/](https://www.bilibili.com/video/av94792318/)
 
 ## Dependencies

@@ -36,7 +36,7 @@ void ActorNote::perform() {
     const float x = config_->key_map_[key] - w * 0.5f;
     const float y = 1.0f * config_->stage_->heightWithoutKeyboard() *
                     (note.timestamp() + note.duration() - to) / (from - to);
-    drawRectangle(x, y, w, h);
+    drawRoundedRectangle(x, y, w, h, config_->note_rounded_radius_);
   }
 }
 

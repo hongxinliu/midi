@@ -40,6 +40,7 @@ Config::Config() {
   // note
   note_color_.setRgbF(1, 1, 1);
   note_alpha_ = 0.8f;
+  note_rounded_radius_ = 10.f;
 
   // keyboard
   show_keyboard_ = true;

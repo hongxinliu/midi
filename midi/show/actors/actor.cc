@@ -17,14 +17,82 @@ void Actor::drawPoints(const size_t num_points, const float *const px,
   glEnd();
 }
 
+void Actor::drawEllipse(const float x, const float y, const float radius_x,
+                        const float radius_y, const bool fill,
+                        const float step) {
+  if (fill) {
+    glBegin(GL_TRIANGLE_FAN);
+    glVertex2f(x, y);
+    for (float r = 0; r < M_PI * 2; r += step) {
+      glVertex2f(x + radius_x * std::cos(r), y + radius_y * std::sin(r));
+    }
+    glEnd();
+  } else {
+    glBegin(GL_LINE_LOOP);
+    for (float r = 0; r < M_PI * 2; r += step) {
+      glVertex2f(x + radius_x * std::cos(r), y + radius_y * std::sin(r));
+    }
+    glEnd();
+  }
+}
+
 void Actor::drawRectangle(const float x, const float y, const float w,
-                          const float h) {
-  glBegin(GL_QUADS);
-  glVertex2f(x, y);
-  glVertex2f(x + w, y);
-  glVertex2f(x + w, y + h);
-  glVertex2f(x, y + h);
-  glEnd();
+                          const float h, const bool fill) {
+  if (fill) {
+    glBegin(GL_QUADS);
+    glVertex2f(x, y);
+    glVertex2f(x + w, y);
+    glVertex2f(x + w, y + h);
+    glVertex2f(x, y + h);
+    glEnd();
+  } else {
+    glBegin(GL_LINE_LOOP);
+    glVertex2f(x, y);
+    glVertex2f(x + w, y);
+    glVertex2f(x + w, y + h);
+    glVertex2f(x, y + h);
+    glEnd();
+  }
+}
+
+void Actor::drawRoundedRectangle(const float x, const float y, const float w,
+                                 const float h, const float radius,
+                                 const bool fill, const float step) {
+  const float r = std::min(std::min(w, h) / 2, radius);
+
+  if (fill) {
+    glBegin(GL_TRIANGLE_FAN);
+    glVertex2f(x + w / 2, y + h / 2);
+    for (float rad = 0; rad < M_PI_2; rad += step) {
+      glVertex2f(x + w - r + r * std::cos(rad), y + h - r + r * std::sin(rad));
+    }
+    for (float rad = M_PI_2; rad < M_PI; rad += step) {
+      glVertex2f(x + r + r * std::cos(rad), y + h - r + r * std::sin(rad));
+    }
+    for (float rad = M_PI; rad <= M_PI_2 * 3; rad += step) {
+      glVertex2f(x + r + r * std::cos(rad), y + r + r * std::sin(rad));
+    }
+    for (float rad = M_PI_2 * 3; rad <= M_PI * 2; rad += step) {
+      glVertex2f(x + w - r + r * std::cos(rad), y + r + r * std::sin(rad));
+    }
+    glVertex2f(x + w, y + h - r);
+    glEnd();
+  } else {
+    glBegin(GL_LINE_LOOP);
+    for (float rad = 0; rad < M_PI_2; rad += step) {
+      glVertex2f(x + w - r + r * std::cos(rad), y + h - r + r * std::sin(rad));
+    }
+    for (float rad = M_PI_2; rad < M_PI; rad += step) {
+      glVertex2f(x + r + r * std::cos(rad), y + h - r + r * std::sin(rad));
+    }
+    for (float rad = M_PI; rad <= M_PI_2 * 3; rad += step) {
+      glVertex2f(x + r + r * std::cos(rad), y + r + r * std::sin(rad));
+    }
+    for (float rad = M_PI_2 * 3; rad <= M_PI * 2; rad += step) {
+      glVertex2f(x + w - r + r * std::cos(rad), y + r + r * std::sin(rad));
+    }
+    glEnd();
+  }
 }
 
 void Actor::drawTexture(const std::shared_ptr<QOpenGLTexture> &texture,

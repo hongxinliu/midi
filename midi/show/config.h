@@ -58,6 +58,7 @@ class Config {
   // note
   QColor note_color_;
   float note_alpha_;
+  float note_rounded_radius_;
 
   // keyboard
   bool show_keyboard_;

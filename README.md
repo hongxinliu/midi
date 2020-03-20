@@ -16,6 +16,7 @@ Demo show made from this project: [https://www.bilibili.com/video/av94792318/](h
 * OpenGL
 * Protobuf
 * Boost
+* OpenCV
 
 ## Build
 ```bash

@@ -49,6 +49,7 @@ class Config {
   float background_alpha_;
 
   // particle
+  bool particle_trail_;
   QColor particle_color_;
   float particle_alpha_;
   int64_t particle_lifetime_;

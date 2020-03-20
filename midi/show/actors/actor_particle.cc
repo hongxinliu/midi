@@ -4,6 +4,7 @@
 #include "midi/show/config.h"
 #include "midi/show/stage.h"
 #include "midi/show/theater.h"
+#include <opencv2/opencv.hpp>
 
 namespace midi {
 
@@ -12,6 +13,27 @@ ActorParticle::ActorParticle() : gravity_(0, 0.0002) {}
 void ActorParticle::perform() {
   if (!config_->notes_) {
     return;
+  }
+
+  auto fb = std::make_shared<QOpenGLFramebufferObject>(config_->stage_->width(), config_->stage_->height());
+  fb->bind();
+
+  if (config_->particle_trail_ && background_) {
+    static auto filter = cv::cuda::createGaussianFilter(CV_8UC3, CV_8UC3, cv::Size(31, 31), 0);
+    auto qimg = background_->toImage();
+    qimg.convertTo(QImage::Format_BGR888);
+    auto m = cv::Mat(qimg.height(), qimg.width(), CV_8UC3, qimg.bits(), qimg.bytesPerLine()).clone();
+    cv::cuda::GpuMat gm;
+    gm.upload(m);
+    if (gm.cols != config_->stage_->width() || gm.rows != config_->stage_->height()) {
+      cv::cuda::resize(gm, gm, cv::Size(config_->stage_->width(), config_->stage_->height()));
+    }
+    filter->apply(gm, gm);
+    gm.convertTo(gm, gm.type(), 0.95);
+    gm.download(m);
+    qimg = QImage(m.data, m.cols, m.rows, m.step, QImage::Format_BGR888);
+    auto texture = std::make_shared<QOpenGLTexture>(qimg);
+    drawTexture(texture, 0, 0, config_->stage_->width(), config_->stage_->height());
   }
 
   static std::default_random_engine e;
@@ -75,6 +97,13 @@ void ActorParticle::perform() {
             config_->particle_color_.blueF(), config_->particle_alpha_);
   glPointSize(config_->particle_size_);
   drawPoints(num_points, x.data(), y.data());
+
+  fb->release();
+  QOpenGLFramebufferObject::blitFramebuffer(0, fb.get());
+
+  if (config_->particle_trail_) {
+    background_ = fb;
+  }
 }
 
 }  // namespace midi

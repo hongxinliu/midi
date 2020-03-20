@@ -71,6 +71,9 @@ Director::Director() {
   // particle
   auto label_particle = new QLabel("Particles");
   label_particle->setAlignment(Qt::AlignCenter);
+  auto cb_particle_trail = new CheckBox("Show Trail", config_->particle_trail_, [=](const bool is_checked) {
+    config_->particle_trail_ = is_checked;
+  });
   auto bt_particle_color = new ColorButton(
       config_->particle_color_,
       [=](const QColor &color) { config_->particle_color_ = color; },
@@ -80,6 +83,7 @@ Director::Director() {
                  [=](const double val) { config_->particle_alpha_ = val; });
   auto layout_particle = new QVBoxLayout();
   layout_particle->addWidget(label_particle);
+  layout_particle->addWidget(cb_particle_trail);
   layout_particle->addWidget(bt_particle_color);
   layout_particle->addWidget(slider_particle_alpha);
   auto gb_particle = new QGroupBox();

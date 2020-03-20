@@ -31,16 +31,17 @@ Config::Config() {
   background_alpha_ = 0.3f;
 
   // particle
+  particle_trail_ = true;
   particle_color_.setRgbF(1, 1, 1);
-  particle_alpha_ = 0.6f;
+  particle_alpha_ = 0.4f;
   particle_lifetime_ = 3000000;
-  particle_limit_ = 1024;
+  particle_limit_ = 512;
   particle_size_ = 5;
 
   // note
   note_color_.setRgbF(1, 1, 1);
   note_alpha_ = 0.8f;
-  note_rounded_radius_ = 10.f;
+  note_rounded_radius_ = 8.f;
 
   // keyboard
   show_keyboard_ = true;

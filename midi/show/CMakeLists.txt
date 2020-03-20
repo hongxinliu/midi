@@ -26,7 +26,7 @@ find_package(Boost REQUIRED)
 # target
 file(GLOB_RECURSE SRCS "*.cc")
 add_executable(${TARGET_NAME} ${SRCS})
-target_link_libraries(${TARGET_NAME} midi_io midi_proto ${PROTOBUF_LIBRARIES} ${Qt5_LIBRARIES} GL boost_system boost_filesystem pthread)
+target_link_libraries(${TARGET_NAME} midi_io midi_proto ${PROTOBUF_LIBRARIES} ${Qt5_LIBRARIES} GL ${OpenCV_LIBS} boost_system boost_filesystem pthread)
 
 # install
 install(TARGETS ${TARGET_NAME}

@@ -71,9 +71,9 @@ Director::Director() {
   // particle
   auto label_particle = new QLabel("Particles");
   label_particle->setAlignment(Qt::AlignCenter);
-  auto cb_particle_trail = new CheckBox("Show Trail", config_->particle_trail_, [=](const bool is_checked) {
-    config_->particle_trail_ = is_checked;
-  });
+  auto cb_particle_trail = new CheckBox(
+      "Show Trail", config_->particle_trail_,
+      [=](const bool is_checked) { config_->particle_trail_ = is_checked; });
   auto bt_particle_color = new ColorButton(
       config_->particle_color_,
       [=](const QColor &color) { config_->particle_color_ = color; },

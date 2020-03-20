@@ -1,39 +1,52 @@
 #include "midi/show/actors/actor_particle.h"
+#include <QOpenGLFramebufferObject>
+#include <opencv2/opencv.hpp>
 #include <random>
 #include "midi/proto/note.pb.h"
 #include "midi/show/config.h"
 #include "midi/show/stage.h"
 #include "midi/show/theater.h"
-#include <opencv2/opencv.hpp>
 
 namespace midi {
 
 ActorParticle::ActorParticle() : gravity_(0, 0.0002) {}
+
+ActorParticle::~ActorParticle() {
+  enable_thread_process_.store(false);
+  cv_.notify_all();
+  if (handle_thread_process_) {
+    while (!handle_thread_process_->joinable()) {
+      ;
+    }
+    handle_thread_process_->join();
+    handle_thread_process_.reset();
+  }
+}
+
+void ActorParticle::initialize() {
+  Actor::initialize();
+
+  enable_thread_process_.store(true);
+  handle_thread_process_.reset(
+      new std::thread(std::bind(&ActorParticle::threadProcess, this)));
+}
 
 void ActorParticle::perform() {
   if (!config_->notes_) {
     return;
   }
 
-  auto fb = std::make_shared<QOpenGLFramebufferObject>(config_->stage_->width(), config_->stage_->height());
+  auto fb = std::make_shared<QOpenGLFramebufferObject>(
+      config_->stage_->width(), config_->stage_->height());
   fb->bind();
 
-  if (config_->particle_trail_ && background_) {
-    static auto filter = cv::cuda::createGaussianFilter(CV_8UC3, CV_8UC3, cv::Size(31, 31), 0);
-    auto qimg = background_->toImage();
-    qimg.convertTo(QImage::Format_BGR888);
-    auto m = cv::Mat(qimg.height(), qimg.width(), CV_8UC3, qimg.bits(), qimg.bytesPerLine()).clone();
-    cv::cuda::GpuMat gm;
-    gm.upload(m);
-    if (gm.cols != config_->stage_->width() || gm.rows != config_->stage_->height()) {
-      cv::cuda::resize(gm, gm, cv::Size(config_->stage_->width(), config_->stage_->height()));
+  if (config_->particle_trail_) {
+    std::lock_guard<std::mutex> lock(mutex_);
+    if (!bg_.isNull()) {
+      auto texture = std::make_shared<QOpenGLTexture>(bg_);
+      drawTexture(texture, 0, 0, config_->stage_->width(),
+                  config_->stage_->height());
     }
-    filter->apply(gm, gm);
-    gm.convertTo(gm, gm.type(), 0.95);
-    gm.download(m);
-    qimg = QImage(m.data, m.cols, m.rows, m.step, QImage::Format_BGR888);
-    auto texture = std::make_shared<QOpenGLTexture>(qimg);
-    drawTexture(texture, 0, 0, config_->stage_->width(), config_->stage_->height());
   }
 
   static std::default_random_engine e;
@@ -102,7 +115,38 @@ void ActorParticle::perform() {
   QOpenGLFramebufferObject::blitFramebuffer(0, fb.get());
 
   if (config_->particle_trail_) {
-    background_ = fb;
+    std::lock_guard<std::mutex> lock(mutex_);
+    bg_ = fb->toImage();
+    cv_.notify_one();
+  }
+}
+
+void ActorParticle::threadProcess() {
+  while (enable_thread_process_.load()) {
+    std::unique_lock<std::mutex> lock(mutex_);
+    cv_.wait(lock);
+    if (!enable_thread_process_.load()) {
+      break;
+    }
+
+    static auto filter =
+        cv::cuda::createGaussianFilter(CV_8UC3, CV_8UC3, cv::Size(31, 31), 0);
+    bg_.convertTo(QImage::Format_BGR888);
+    auto m = cv::Mat(bg_.height(), bg_.width(), CV_8UC3, bg_.bits(),
+                     bg_.bytesPerLine())
+                 .clone();
+    cv::cuda::GpuMat gm;
+    gm.upload(m);
+    if (gm.cols != config_->stage_->width() ||
+        gm.rows != config_->stage_->height()) {
+      cv::cuda::resize(
+          gm, gm,
+          cv::Size(config_->stage_->width(), config_->stage_->height()));
+    }
+    filter->apply(gm, gm);
+    gm.convertTo(gm, gm.type(), 0.95);
+    gm.download(m);
+    bg_ = QImage(m.data, m.cols, m.rows, m.step, QImage::Format_BGR888);
   }
 }
 

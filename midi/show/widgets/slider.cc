@@ -1,6 +1,7 @@
 #include "midi/show/widgets/slider.h"
 #include <QLabel>
 #include <QLayout>
+#include <cmath>
 #include <iomanip>
 #include <sstream>
 

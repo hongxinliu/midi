@@ -1,4 +1,5 @@
 #include "midi/show/actors/actor_particle.h"
+#include <random>
 #include "midi/proto/note.pb.h"
 #include "midi/show/config.h"
 #include "midi/show/stage.h"

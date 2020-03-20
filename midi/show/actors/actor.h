@@ -4,6 +4,7 @@
 #include <QOpenGLFunctions>
 #include <QOpenGLTexture>
 #include <QOpenGLVertexArrayObject>
+#include <cmath>
 #include <memory>
 
 namespace midi {

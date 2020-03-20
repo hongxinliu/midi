@@ -7,8 +7,4 @@ if [ $# -ge 1 ];then
   fi
 fi
 
-if [ -z ${Qt5_DIR} ];then
-  echo "Qt5_DIR is not set"
-fi
-
-mkdir -p build && cd build && cmake .. -DCMAKE_INSTALL_PREFIX=../output -DQt5_DIR=${Qt5_DIR} && make -j8 install
+mkdir -p build && cd build && cmake .. -DCMAKE_INSTALL_PREFIX=../output && make -j8 install

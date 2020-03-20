@@ -9,7 +9,7 @@ foreach(PROTO_FILE ${PROTO_FILES})
   get_filename_component(FILE_NAME ${PROTO_FILE} NAME_WE)
   list(APPEND PROTO_HDRS "${CMAKE_CURRENT_BINARY_DIR}/${FILE_NAME}.pb.h")
   list(APPEND PROTO_SRCS "${CMAKE_CURRENT_BINARY_DIR}/${FILE_NAME}.pb.cc")
-  execute_process(COMMAND ${PROTOBUF_PROTOC_EXECUTABLE}
+  execute_process(COMMAND ${Protobuf_PROTOC_EXECUTABLE}
                           ${PROTO_FLAGS}
                           ${PROTO_FILE})
 ENDFOREACH()

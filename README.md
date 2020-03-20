@@ -24,4 +24,4 @@ cd midi
 ./build.sh
 ```
 
-Note that, if Qt5 is not found, set Qt5_DIR to where your Qt5 installed.
+Note that, if Qt5 is not found, set Qt5_ROOT_DIR to where your Qt5 installed.
